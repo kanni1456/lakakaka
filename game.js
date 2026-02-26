@@ -1,3 +1,5 @@
+window.onload = function () {
+
 // Canvas setup
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -31,9 +33,9 @@ let gameStarted = false;
 let gameOver = false;
 let score = 0;
 
-let gravity = 0.4;        // easier game
+let gravity = 0.4;
 let jumpPower = -8;
-let pipeGap = 180;        // bigger gap = easier
+let pipeGap = 180;
 let pipeWidth = 60;
 let pipeSpeed = 2;
 
@@ -51,6 +53,7 @@ let player = {
 startBtn.onclick = () => {
     startScreen.style.display = "none";
     gameStarted = true;
+    requestAnimationFrame(gameLoop);
 };
 
 // Restart button
@@ -58,13 +61,12 @@ restartBtn.onclick = () => {
     video.pause();
     video.currentTime = 0;
     overlay.style.display = "none";
-
     resetGame();
     gameStarted = true;
     requestAnimationFrame(gameLoop);
 };
 
-// Controls (PC + Mobile)
+// Controls
 function jump() {
     if (!gameStarted || gameOver) return;
 
@@ -92,7 +94,6 @@ function resetGame() {
 // Create pipes
 function createPipe() {
     let topHeight = Math.random() * 250 + 50;
-
     pipes.push({
         x: canvas.width,
         topHeight: topHeight
@@ -108,7 +109,6 @@ function endGame() {
     hitSound.play();
 
     overlay.style.display = "flex";
-
     video.currentTime = 0;
 
     setTimeout(() => {
@@ -118,19 +118,14 @@ function endGame() {
     }, 100);
 }
 
-// Collision detection
+// Collision
 function checkCollision(pipe) {
-    if (
+    return (
         player.x < pipe.x + pipeWidth &&
         player.x + player.width > pipe.x &&
-        (
-            player.y < pipe.topHeight ||
-            player.y + player.height > pipe.topHeight + pipeGap
-        )
-    ) {
-        return true;
-    }
-    return false;
+        (player.y < pipe.topHeight ||
+         player.y + player.height > pipe.topHeight + pipeGap)
+    );
 }
 
 // Game loop
@@ -138,31 +133,23 @@ function gameLoop() {
     if (!gameStarted || gameOver) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Background
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-    // Player physics
     player.velocity += gravity;
     player.y += player.velocity;
 
-    // Ground collision
     if (player.y + player.height >= canvas.height || player.y <= 0) {
         endGame();
+        return;
     }
 
-    // Draw player
     ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
 
-    // Pipes
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
         pipe.x -= pipeSpeed;
 
-        // Top pipe
         ctx.drawImage(pipeImg, pipe.x, 0, pipeWidth, pipe.topHeight);
-
-        // Bottom pipe
         ctx.drawImage(
             pipeImg,
             pipe.x,
@@ -171,26 +158,22 @@ function gameLoop() {
             canvas.height - pipe.topHeight - pipeGap
         );
 
-        // Collision
         if (checkCollision(pipe)) {
             endGame();
+            return;
         }
 
-        // Score
         if (pipe.x + pipeWidth === player.x) {
             score++;
         }
     }
 
-    // Remove off-screen pipes
     pipes = pipes.filter(pipe => pipe.x + pipeWidth > 0);
 
-    // Generate new pipes
     if (pipes.length === 0 || pipes[pipes.length - 1].x < 250) {
         createPipe();
     }
 
-    // Score display
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.fillText("Score: " + score, 20, 30);
@@ -198,5 +181,4 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Start animation loop
-requestAnimationFrame(gameLoop);
+};
