@@ -33,10 +33,10 @@ let gameStarted = false;
 let gameOver = false;
 let score = 0;
 
-let gravity = 0.4;
-let jumpPower = -8;
+let gravity = 0.2;
+let jumpPower = -6;
 let pipeGap = 180;
-let pipeWidth = 60;
+let pipeWidth = 80;
 let pipeSpeed = 2;
 
 let pipes = [];
@@ -44,8 +44,8 @@ let pipes = [];
 let player = {
     x: 80,
     y: 200,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     velocity: 0
 };
 
@@ -182,3 +182,4 @@ function gameLoop() {
 }
 
 };
+
