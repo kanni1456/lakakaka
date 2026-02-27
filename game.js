@@ -34,7 +34,7 @@ let gameOver = false;
 let score = 0;
 
 let gravity = 0.3;
-let jumpPower = 6;
+let jumpPower = -6;
 let pipeGap = 220;
 let pipeWidth = 80;
 let pipeSpeed = 2;
@@ -182,5 +182,6 @@ function gameLoop() {
 }
 
 };
+
 
 
